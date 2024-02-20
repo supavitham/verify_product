@@ -34,31 +34,38 @@ class VerifyProductController extends ChangeNotifier {
                       check.codeProduct?.toLowerCase()))
           .toList();
       if (countCheck.isNotEmpty) {
-        if (countCheck.length == 3) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('ข้อมูลถูกบันทึกไปแล้ว'),
-          ));
-        } else if (countCheck.length >= 2) {
-          checkAreaAndCodeProductInStock = true;
-          int? dataCorrect;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('เคยบันทึกข้อมูลแล้ว'),
+        ));
+        if (countCheck.length >= 2) {
           bool equalStock = false;
-          for (int i = 0; i < countCheck.length; i++) {
-            if (i == 0) {
-              dataCorrect = countCheck[i].stock;
-            } else if (countCheck.length == 2) {
-              equalStock = dataCorrect == countCheck[i].stock ? true : false;
-            } else {
-              if (countCheck.length == 3) {
-                equalStock = dataCorrect == countCheck[i].stock ? true : false;
-              } else {
-                dataCorrect = countCheck[i].stock;
-              }
+          if (countCheck.length == 2) {
+            equalStock = countCheck[0].stock == countCheck[1].stock;
+            if (equalStock) {
+              countCheck[0].stockConfirm = countCheck[0].stock;
             }
+          } else {
+            final resIndexZero = countCheck[0].stock == countCheck[1].stock ||
+                countCheck[0].stock == countCheck[2].stock;
+            if (!resIndexZero) {
+              final resIndexTwo = countCheck[1].stock == countCheck[2].stock;
+              if (!resIndexTwo) {
+                countCheck[2].stockConfirm = countCheck[2].stock;
+              } else {
+                countCheck[1].stockConfirm = countCheck[1].stock;
+              }
+            } else {
+              countCheck[0].stockConfirm = countCheck[0].stock;
+            }
+            equalStock = true;
           }
+
           if (equalStock) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('ตรวจนำสินค้าสำเร็จ'),
+              content: Text('ตรวจนำสินค้าจบแล้ว'),
             ));
+          } else {
+            checkAreaAndCodeProductInStock = true;
           }
         } else {
           checkAreaAndCodeProductInStock = true;
@@ -89,6 +96,47 @@ class VerifyProductController extends ChangeNotifier {
     area.clear();
     codeProduct.clear();
     number.clear();
+    checkKeepStock(newData);
+  }
+
+  void checkKeepStock(newData) {
+    final countCheck = keepStockCheck
+        .where((element) =>
+            (element.area?.toLowerCase() == newData.area?.toLowerCase() &&
+                element.codeProduct?.toLowerCase() ==
+                    newData.codeProduct?.toLowerCase()))
+        .toList();
+    if (countCheck.isNotEmpty) {
+      if (countCheck.length >= 2) {
+        bool equalStock = false;
+        if (countCheck.length == 2) {
+          equalStock = countCheck[0].stock == countCheck[1].stock;
+          if (equalStock) {
+            countCheck[0].stockConfirm = countCheck[0].stock;
+          }
+        } else {
+          final resIndexZero = countCheck[0].stock == countCheck[1].stock ||
+              countCheck[0].stock == countCheck[2].stock;
+          if (!resIndexZero) {
+            final resIndexTwo = countCheck[1].stock == countCheck[2].stock;
+            if (!resIndexTwo) {
+              countCheck[2].stockConfirm = countCheck[2].stock;
+            } else {
+              countCheck[1].stockConfirm = countCheck[1].stock;
+            }
+          } else {
+            countCheck[0].stockConfirm = countCheck[0].stock;
+          }
+          equalStock = true;
+        }
+
+        if (equalStock) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('ตรวจนำสินค้าจบแล้ว'),
+          ));
+        }
+      }
+    }
   }
 
   List<StockProductModel> get stockProductModel => _stockProductModel;

@@ -27,6 +27,7 @@ class _VerifyProductScreenState extends State<VerifyProductScreen> {
           child: Consumer<VerifyProductController>(
             builder: (context, value, child) {
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     children: [
@@ -81,7 +82,11 @@ class _VerifyProductScreenState extends State<VerifyProductScreen> {
                         )
                       ],
                     ),
-                  const SizedBox(height: 16),
+                  const Text(
+                    "รายการตรวจ",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
                   ...value.keepStockCheck
                       .map((e) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
@@ -102,7 +107,30 @@ class _VerifyProductScreenState extends State<VerifyProductScreen> {
                               ],
                             ),
                           ))
-                      .toList()
+                      .toList(),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "สรุปการตรวจนับ",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  ...value.keepStockCheck
+                      .where((element) => element.stockConfirm != null)
+                      .map((e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                _buildText(title: 'พื้นที่', val: e.area ?? ''),
+                                const SizedBox(width: 8),
+                                _buildText(
+                                    title: 'รหัสสินค้า',
+                                    val: e.codeProduct ?? ''),
+                                const SizedBox(width: 8),
+                                _buildText(
+                                    title: 'จำนวน', val: '${e.stock ?? ''}'),
+                              ],
+                            ),
+                          ))
+                      .toList(),
                 ],
               );
             },
