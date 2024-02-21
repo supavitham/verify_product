@@ -91,7 +91,7 @@ class VerifyProductController extends ChangeNotifier {
 
     newData.countCheck = findCountCheck.isEmpty ? 1 : findCountCheck.length + 1;
     keepStockCheck.add(newData);
-
+    keepStockCheck = keepStockCheck.sortedBy((e) => e.codeProduct.toString());
     checkAreaAndCodeProductInStock = false;
     area.clear();
     codeProduct.clear();
